@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35303.130
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchVideoEditing", "BatchVideoEditing\BatchVideoEditing.csproj", "{0CFEBACB-512F-4C8E-8F9A-498FBFE001FC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CFEBACB-512F-4C8E-8F9A-498FBFE001FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CFEBACB-512F-4C8E-8F9A-498FBFE001FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CFEBACB-512F-4C8E-8F9A-498FBFE001FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CFEBACB-512F-4C8E-8F9A-498FBFE001FC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B78057C3-5058-425E-977E-F5EF9A91C96A}
+	EndGlobalSection
+EndGlobal
