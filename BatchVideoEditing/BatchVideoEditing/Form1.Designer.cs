@@ -33,11 +33,12 @@
 			lblProgress = new Label();
 			label1 = new Label();
 			flowLayoutPanelProgress = new FlowLayoutPanel();
+			label2 = new Label();
 			SuspendLayout();
 			// 
 			// btnImport
 			// 
-			btnImport.Location = new Point(27, 77);
+			btnImport.Location = new Point(35, 106);
 			btnImport.Name = "btnImport";
 			btnImport.Size = new Size(150, 32);
 			btnImport.TabIndex = 6;
@@ -47,17 +48,18 @@
 			// 
 			// btnProcess
 			// 
-			btnProcess.Location = new Point(515, 315);
+			btnProcess.Location = new Point(523, 394);
 			btnProcess.Name = "btnProcess";
 			btnProcess.Size = new Size(150, 31);
 			btnProcess.TabIndex = 5;
-			btnProcess.Text = "Chỉnh sửa ngay";
+			btnProcess.Text = "  Chỉnh sửa ngay";
+			btnProcess.TextAlign = ContentAlignment.MiddleLeft;
 			btnProcess.UseVisualStyleBackColor = true;
 			btnProcess.Click += btnProcess_Click;
 			// 
 			// btnGoToPath
 			// 
-			btnGoToPath.Location = new Point(27, 483);
+			btnGoToPath.Location = new Point(1139, 629);
 			btnGoToPath.Name = "btnGoToPath";
 			btnGoToPath.Size = new Size(150, 32);
 			btnGoToPath.TabIndex = 7;
@@ -68,11 +70,12 @@
 			// 
 			// btnClearAll
 			// 
-			btnClearAll.Location = new Point(27, 315);
+			btnClearAll.Location = new Point(523, 357);
 			btnClearAll.Name = "btnClearAll";
 			btnClearAll.Size = new Size(150, 31);
 			btnClearAll.TabIndex = 9;
-			btnClearAll.Text = "Clear All";
+			btnClearAll.Text = "  Clear All";
+			btnClearAll.TextAlign = ContentAlignment.MiddleLeft;
 			btnClearAll.UseVisualStyleBackColor = true;
 			btnClearAll.Click += btnClearAll_Click;
 			// 
@@ -80,22 +83,22 @@
 			// 
 			lstVideos.FormattingEnabled = true;
 			lstVideos.ItemHeight = 20;
-			lstVideos.Location = new Point(27, 115);
+			lstVideos.Location = new Point(35, 153);
 			lstVideos.Name = "lstVideos";
 			lstVideos.Size = new Size(638, 184);
 			lstVideos.TabIndex = 3;
 			// 
 			// progressBar
 			// 
-			progressBar.Location = new Point(27, 365);
+			progressBar.Location = new Point(703, 585);
 			progressBar.Name = "progressBar";
-			progressBar.Size = new Size(350, 23);
+			progressBar.Size = new Size(586, 23);
 			progressBar.TabIndex = 2;
 			// 
 			// lblProgress
 			// 
 			lblProgress.AutoSize = true;
-			lblProgress.Location = new Point(27, 405);
+			lblProgress.Location = new Point(703, 561);
 			lblProgress.Name = "lblProgress";
 			lblProgress.Size = new Size(129, 20);
 			lblProgress.TabIndex = 1;
@@ -105,7 +108,7 @@
 			// 
 			label1.AutoSize = true;
 			label1.Font = new Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point);
-			label1.ForeColor = SystemColors.ActiveCaptionText;
+			label1.ForeColor = SystemColors.GrayText;
 			label1.Location = new Point(351, 9);
 			label1.Name = "label1";
 			label1.Size = new Size(607, 46);
@@ -116,16 +119,26 @@
 			// 
 			flowLayoutPanelProgress.AutoScroll = true;
 			flowLayoutPanelProgress.BackColor = SystemColors.ButtonHighlight;
-			flowLayoutPanelProgress.Location = new Point(703, 115);
+			flowLayoutPanelProgress.Location = new Point(703, 153);
 			flowLayoutPanelProgress.Name = "flowLayoutPanelProgress";
-			flowLayoutPanelProgress.Size = new Size(586, 523);
+			flowLayoutPanelProgress.Size = new Size(586, 389);
 			flowLayoutPanelProgress.TabIndex = 8;
+			// 
+			// label2
+			// 
+			label2.AutoSize = true;
+			label2.Location = new Point(703, 118);
+			label2.Name = "label2";
+			label2.Size = new Size(311, 20);
+			label2.TabIndex = 10;
+			label2.Text = "(*) Những video được xử lý sẽ xuất hiện ở đây";
 			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(1331, 673);
+			Controls.Add(label2);
 			Controls.Add(label1);
 			Controls.Add(lblProgress);
 			Controls.Add(progressBar);
@@ -135,6 +148,7 @@
 			Controls.Add(btnGoToPath);
 			Controls.Add(flowLayoutPanelProgress);
 			Controls.Add(btnClearAll);
+			MaximizeBox = false;
 			Name = "Form1";
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "Batch video editing";
@@ -143,5 +157,6 @@
 		}
 
 		private Label label1;
+		private Label label2;
 	}
 }
