@@ -72,7 +72,7 @@
 			btnClearAll.Name = "btnClearAll";
 			btnClearAll.Size = new Size(150, 31);
 			btnClearAll.TabIndex = 9;
-			btnClearAll.Text = "Xóa tất cả";
+			btnClearAll.Text = "Clear All";
 			btnClearAll.UseVisualStyleBackColor = true;
 			btnClearAll.Click += btnClearAll_Click;
 			// 

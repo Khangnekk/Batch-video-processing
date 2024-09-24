@@ -57,8 +57,8 @@ namespace BatchVideoEditing
 
 		private async Task ProcessVideosAsync(List<string> videos)
 		{
-			// Tạo danh sách các ProgressBar và Label để theo dõi tiến độ
-			List<(ProgressBar progressBar, Label label)> progressControls = new List<(ProgressBar, Label)>();
+			int totalVideos = videos.Count;
+			int completedVideos = 0;
 
 			foreach (var video in videos)
 			{
@@ -71,38 +71,37 @@ namespace BatchVideoEditing
 					flowLayoutPanelProgress.Controls.Add(progressBarVideo);
 				}));
 
-				progressControls.Add((progressBarVideo, labelVideo));
+				// Process each video sequentially
+				await ProcessVideoAsync(video, progressBarVideo, labelVideo);
+
+				// Cập nhật tổng tiến độ sau khi hoàn thành từng video
+				completedVideos++;
+				int totalProgressPercentage = (completedVideos * 100) / totalVideos;
+
+				// Cập nhật tổng thanh tiến độ và nhãn
+				progressBar.Value = totalProgressPercentage;
+				lblProgress.Text = $"Total Progress: {totalProgressPercentage}%";
 			}
+		}
 
-			// Tạo danh sách các tác vụ xử lý song song
-			List<Task> tasks = new List<Task>();
 
-			for (int i = 0; i < videos.Count; i++)
+		private async Task ProcessVideoAsync(string inputPath, ProgressBar progressBar, Label label)
+		{
+			try
 			{
-				var video = videos[i];
-				var (progressBarVideo, labelVideo) = progressControls[i];
+				string outputPath = Path.Combine(outputFolderPath, Path.GetFileNameWithoutExtension(inputPath) + "_processed.mp4");
 
-				var task = Task.Run(() =>
-				{
-					try
-					{
-						string outputPath = Path.Combine(outputFolderPath, Path.GetFileNameWithoutExtension(video) + "_processed.mp4");
-
-						// Thực hiện các bước xử lý video
-						ProcessVideo(video, outputPath, progressBarVideo, labelVideo);
-					}
-					catch (Exception ex)
-					{
-						// Hiển thị thông báo lỗi nếu có lỗi trong quá trình xử lý video
-						MessageBox.Show($"Error processing {Path.GetFileName(video)}: {ex.Message}");
-					}
-				});
-
-				tasks.Add(task);
+				// Perform video processing synchronously
+				await Task.Run(() => ProcessVideo(inputPath, outputPath, progressBar, label));
 			}
-
-			// Chờ cho tất cả các video được xử lý xong
-			await Task.WhenAll(tasks);
+			catch (Exception ex)
+			{
+				this.Invoke(new Action(() =>
+				{
+					// Show error message if there is an error processing the video
+					MessageBox.Show($"Error processing {Path.GetFileName(inputPath)}: {ex.Message}");
+				}));
+			}
 		}
 
 
@@ -250,7 +249,7 @@ namespace BatchVideoEditing
 			string fontColor = GetRandomColor(); // Lấy màu ngẫu nhiên
 
 			// Thay thế newline với "\n" cho FFmpeg
-			string overlayCommand = $"-i \"{videoPath}\" -vf \"drawtext=text='{wrappedText.Replace("\n", "\\n\\")}':fontcolor={fontColor}:fontsize=36:shadowcolor=white:shadowx=1:shadowy=1:x=(w-text_w)/2:y=h-350:line_spacing=0.28\" -c:a copy \"{outputPath}\"";
+			string overlayCommand = $"-i \"{videoPath}\" -vf \"drawtext=text='{wrappedText.Replace("\n", "\\")}':fontcolor={fontColor}:fontsize=36:shadowcolor=white:shadowx=1:shadowy=1:x=(w-text_w)/2:y=h-350:line_spacing=0.01\" -c:a copy \"{outputPath}\"";
 			ExecuteFFmpegCommand(overlayCommand);
 		}
 
@@ -282,6 +281,7 @@ namespace BatchVideoEditing
 
 			return wrappedText.ToString().Trim(); // Trả về văn bản đã được bao bọc và không có khoảng trắng ở đầu và cuối
 		}
+
 
 
 
@@ -401,9 +401,10 @@ namespace BatchVideoEditing
 
 		private void btnGoToPath_Click(object sender, EventArgs e)
 		{
+			string tempFolderPath = Path.Combine(outputFolderPath, "final");
 			Process.Start(new ProcessStartInfo
 			{
-				FileName = outputFolderPath,
+				FileName = tempFolderPath,
 				UseShellExecute = true,
 				Verb = "open"
 			});
