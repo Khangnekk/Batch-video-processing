@@ -38,6 +38,7 @@
 			// 
 			// btnImport
 			// 
+			btnImport.Cursor = Cursors.Hand;
 			btnImport.Location = new Point(35, 106);
 			btnImport.Name = "btnImport";
 			btnImport.Size = new Size(150, 32);
@@ -48,7 +49,8 @@
 			// 
 			// btnProcess
 			// 
-			btnProcess.Location = new Point(523, 394);
+			btnProcess.Cursor = Cursors.Hand;
+			btnProcess.Location = new Point(523, 363);
 			btnProcess.Name = "btnProcess";
 			btnProcess.Size = new Size(150, 31);
 			btnProcess.TabIndex = 5;
@@ -59,6 +61,7 @@
 			// 
 			// btnGoToPath
 			// 
+			btnGoToPath.Cursor = Cursors.Hand;
 			btnGoToPath.Location = new Point(1139, 629);
 			btnGoToPath.Name = "btnGoToPath";
 			btnGoToPath.Size = new Size(150, 32);
@@ -70,7 +73,8 @@
 			// 
 			// btnClearAll
 			// 
-			btnClearAll.Location = new Point(523, 357);
+			btnClearAll.Cursor = Cursors.Hand;
+			btnClearAll.Location = new Point(35, 363);
 			btnClearAll.Name = "btnClearAll";
 			btnClearAll.Size = new Size(150, 31);
 			btnClearAll.TabIndex = 9;
