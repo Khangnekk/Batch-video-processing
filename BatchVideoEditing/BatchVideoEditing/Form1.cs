@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 
 namespace BatchVideoEditing
 {
@@ -46,28 +47,34 @@ namespace BatchVideoEditing
 			btnGoToPath.Visible = true;
 			btnProcess.Enabled = true;
 			lstVideos.Items.Clear();
-			// Xóa hết mọi thứ trong thư mục temp
-			string tempFolderPath = Path.Combine(outputFolderPath, "temp");
-			if (Directory.Exists(tempFolderPath))
-			{
-				Directory.Delete(tempFolderPath, true);
-			}
+			//// Xóa hết mọi thứ trong thư mục temp
+			//string tempFolderPath = Path.Combine(outputFolderPath, "temp");
+			//if (Directory.Exists(tempFolderPath))
+			//{
+			//	Directory.Delete(tempFolderPath, true);
+			//}
 		}
 
 		private async Task ProcessVideosAsync(List<string> videos)
 		{
+			// Tạo danh sách các ProgressBar và Label để theo dõi tiến độ
 			List<(ProgressBar progressBar, Label label)> progressControls = new List<(ProgressBar, Label)>();
 
 			foreach (var video in videos)
 			{
-				ProgressBar progressBarVideo = new ProgressBar { Maximum = 100, Width = 250 };
-				Label labelVideo = new Label { Text = $"{Path.GetFileName(video)}: 0%", Width = 250 };
+				ProgressBar progressBarVideo = new ProgressBar { Maximum = 100, Width = 500 };
+				Label labelVideo = new Label { Text = $"{Path.GetFileName(video)}: 0%", Width = 500 };
 
-				flowLayoutPanelProgress.Controls.Add(labelVideo);
-				flowLayoutPanelProgress.Controls.Add(progressBarVideo);
+				flowLayoutPanelProgress.Invoke(new Action(() =>
+				{
+					flowLayoutPanelProgress.Controls.Add(labelVideo);
+					flowLayoutPanelProgress.Controls.Add(progressBarVideo);
+				}));
+
 				progressControls.Add((progressBarVideo, labelVideo));
 			}
 
+			// Tạo danh sách các tác vụ xử lý song song
 			List<Task> tasks = new List<Task>();
 
 			for (int i = 0; i < videos.Count; i++)
@@ -82,11 +89,11 @@ namespace BatchVideoEditing
 						string outputPath = Path.Combine(outputFolderPath, Path.GetFileNameWithoutExtension(video) + "_processed.mp4");
 
 						// Thực hiện các bước xử lý video
-						ProcessVideo(video, outputPath);
-						UpdateVideoProgress(progressBarVideo, labelVideo, 100);
+						ProcessVideo(video, outputPath, progressBarVideo, labelVideo);
 					}
 					catch (Exception ex)
 					{
+						// Hiển thị thông báo lỗi nếu có lỗi trong quá trình xử lý video
 						MessageBox.Show($"Error processing {Path.GetFileName(video)}: {ex.Message}");
 					}
 				});
@@ -94,8 +101,10 @@ namespace BatchVideoEditing
 				tasks.Add(task);
 			}
 
+			// Chờ cho tất cả các video được xử lý xong
 			await Task.WhenAll(tasks);
 		}
+
 
 		private void UpdateVideoProgress(ProgressBar progressBar, Label label, int progressPercentage)
 		{
@@ -111,8 +120,9 @@ namespace BatchVideoEditing
 			}
 		}
 
-		private void ProcessVideo(string inputPath, string outputPath)
+		private void ProcessVideo(string inputPath, string outputPath, ProgressBar progressBar, Label label)
 		{
+			UpdateVideoProgress(progressBar, label, 10);
 			// Đảm bảo thư mục đầu ra tồn tại
 			if (!Directory.Exists(outputFolderPath))
 				Directory.CreateDirectory(outputFolderPath);
@@ -126,9 +136,11 @@ namespace BatchVideoEditing
 			// 1. Crop video lại sao cho chiều dài giảm xuống còn 80% và thêm nền với hiệu ứng blur
 			string cropAndBlurPath = Path.Combine(tempFolderPath, "cropped_blurred_" + Path.GetFileName(inputPath));
 			CropAndBlurVideo(inputPath, cropAndBlurPath);
+			UpdateVideoProgress(progressBar, label, 20); // Cập nhật tiến độ sau khi hoàn thành bước 1
 
 			// 2. Cắt video đã chỉnh sửa thành 5 phần
 			List<string> splitVideos = SplitVideoIntoParts(cropAndBlurPath, 5);
+			UpdateVideoProgress(progressBar, label, 40); // Cập nhật tiến độ sau khi hoàn thành bước 2
 
 			// 3. Horizontal flip cho các phần 1, 3, 5
 			for (int i = 0; i < splitVideos.Count; i++)
@@ -140,24 +152,46 @@ namespace BatchVideoEditing
 					splitVideos[i] = flippedPath; // Cập nhật đường dẫn sau khi flip
 				}
 			}
+			UpdateVideoProgress(progressBar, label, 60); // Cập nhật tiến độ sau khi hoàn thành bước 3
 
 			// 4. Ghép các phần video lại thành 1 video trong temp
 			string combinedPath = Path.Combine(tempFolderPath, "combined_" + Path.GetFileNameWithoutExtension(inputPath) + ".mp4");
 			CombineVideos(splitVideos, combinedPath);
+			UpdateVideoProgress(progressBar, label, 80); // Cập nhật tiến độ sau khi hoàn thành bước 4
 
 			// 5. Chèn text vào video và lưu vào thư mục final
-			OverlayText(combinedPath, Path.GetFileNameWithoutExtension(inputPath));
-			string finalOutputPath = Path.Combine(finalFolderPath, Path.GetFileNameWithoutExtension(inputPath) + "_final.mp4");
-			File.Move(combinedPath, finalOutputPath); // Di chuyển video đã hoàn thành sang thư mục final
+			string overlayOutputPath = Path.Combine(finalFolderPath, "overlaytext_" + Path.GetFileNameWithoutExtension(inputPath) + ".mp4");
+			OverlayText(combinedPath, Path.GetFileNameWithoutExtension(inputPath), overlayOutputPath);
+			UpdateVideoProgress(progressBar, label, 95);
 
-			// Xóa video tạm sau khi đã hoàn thành (đã di chuyển tất cả video final vào final)
-			foreach (var splitVideo in splitVideos)
+			// 6. Tăng sáng video lên 15% và lưu với tên gọi là tên ban đầu + "_final.mp4"
+			string finalOutputPath = Path.Combine(finalFolderPath, Path.GetFileNameWithoutExtension(inputPath) + "_final.mp4");
+			BrightenVideo(overlayOutputPath, finalOutputPath);
+			UpdateVideoProgress(progressBar, label, 100); // Cập nhật tiến độ sau khi hoàn thành bước 6
+
+			// 7.Xóa tệp overlayOutputPath
+			if (File.Exists(overlayOutputPath))
 			{
-				if (File.Exists(splitVideo))
-				{
-					File.Delete(splitVideo);
-				}
+				File.Delete(overlayOutputPath);
 			}
+
+			// 8. Xóa mọi thứ trong thư mục temp sau khi hoàn thành
+			foreach (string file in Directory.GetFiles(tempFolderPath))
+			{
+				File.Delete(file);
+			}
+
+			// 9. Nếu bạn cũng muốn xóa các thư mục con (nếu có), bạn có thể sử dụng
+			foreach (string dir in Directory.GetDirectories(tempFolderPath))
+			{
+				Directory.Delete(dir, true);
+			}
+		}
+
+		private void BrightenVideo(string inputPath, string outputPath)
+		{
+			string brightenCommand = $"-i \"{inputPath}\" -vf \"eq=brightness=0.10\" -c:a copy \"{outputPath}\"";
+			ExecuteFFmpegCommand(brightenCommand);
 		}
 
 		// Cập nhật CropAndBlurVideo để chỉ lưu file tạm trong temp
@@ -190,20 +224,8 @@ namespace BatchVideoEditing
 			List<string> splitParts = new List<string>();
 			double duration = GetVideoDuration(videoPath);
 
-			// Lấy duration chia hết cho 5 và nhỏ hơn hoặc bằng số hiện tại
-			double roundedDuration = Math.Floor(duration / 5) * 5;
-
-			// Tính toán số phần
-			double durationPart;
-			if (roundedDuration > 0 && roundedDuration == duration)
-			{
-				durationPart = roundedDuration / 5;
-			}
-			else
-			{
-				// Chia thành 4 phần bằng nhau và phần còn lại sẽ là phần thứ 5
-				durationPart = roundedDuration / 4;
-			}
+			// Tính toán thời lượng cho mỗi phần
+			double durationPart = duration / parts;
 
 			for (int i = 0; i < parts; i++)
 			{
@@ -212,11 +234,8 @@ namespace BatchVideoEditing
 
 				double startTime = i * durationPart;
 
-				// Nếu đang chia thành 5 phần thì sử dụng durationPart
-				// Nếu đang chia thành 4 phần, phần cuối sẽ là phần còn lại
-				double splitDuration = (i < 4) ? durationPart : (duration - (durationPart * 4));
-
-				string splitCommand = $"-i \"{videoPath}\" -ss {startTime} -t {splitDuration} -c copy \"{partPath}\"";
+				// Lệnh FFmpeg để cắt từng phần, không dùng "-c copy" để tránh lỗi keyframes
+				string splitCommand = $"-i \"{videoPath}\" -ss {startTime} -t {durationPart} -c:v libx264 -crf 18 -preset veryfast -c:a aac \"{partPath}\"";
 				ExecuteFFmpegCommand(splitCommand);
 			}
 
@@ -224,9 +243,61 @@ namespace BatchVideoEditing
 		}
 
 
-		private void OverlayText(string videoPath, string text)
+
+		private void OverlayText(string videoPath, string text, string outputPath)
 		{
-			string overlayCommand = $"-i \"{videoPath}\" -vf \"drawtext=text='{text}':fontcolor=white:fontsize=24:x=(w-text_w)/2:y=h-text_h-30\" -c:a copy \"{videoPath}\"";
+			string wrappedText = WrapText(text, 21); // Giả sử maxLineLength là 21
+			string fontColor = GetRandomColor(); // Lấy màu ngẫu nhiên
+
+			// Thay thế newline với "\n" cho FFmpeg
+			string overlayCommand = $"-i \"{videoPath}\" -vf \"drawtext=text='{wrappedText.Replace("\n", "\\n\\")}':fontcolor={fontColor}:fontsize=36:shadowcolor=white:shadowx=1:shadowy=1:x=(w-text_w)/2:y=h-350:line_spacing=0.28\" -c:a copy \"{outputPath}\"";
+			ExecuteFFmpegCommand(overlayCommand);
+		}
+
+		private string GetRandomColor()
+		{
+			// Tạo màu ngẫu nhiên giữa đỏ và vàng đậm
+			Random rand = new Random();
+			return rand.Next(2) == 0 ? "red" : "gold"; // "gold" là màu vàng đậm
+		}
+
+		private string WrapText(string text, int maxLineLength)
+		{
+			var words = text.Split(' ');
+			var wrappedText = new StringBuilder();
+			var currentLine = new StringBuilder();
+
+			foreach (var word in words)
+			{
+				if (currentLine.Length + word.Length + 1 > maxLineLength)
+				{
+					wrappedText.Append(currentLine.ToString().Trim()); // Thêm dòng đã cắt
+					wrappedText.AppendLine(); // Thêm dòng mới
+					currentLine.Clear();
+				}
+				currentLine.Append(word + " ");
+			}
+
+			wrappedText.Append(currentLine.ToString().Trim()); // Thêm dòng cuối cùng
+
+			return wrappedText.ToString().Trim(); // Trả về văn bản đã được bao bọc và không có khoảng trắng ở đầu và cuối
+		}
+
+
+
+		private void OverlayText(string videoPath)
+		{
+			// Kiểm tra và loại bỏ phần '\output\temp\' trong videoPath nếu nó tồn tại
+			string tempFolderPath = Path.Combine(outputFolderPath, "temp");
+
+			if (videoPath.Contains(tempFolderPath))
+			{
+				// Lấy tên file từ videoPath
+				videoPath = Path.GetFileName(videoPath);
+			}
+
+			// Chèn chữ "abc" đơn giản vào video
+			string overlayCommand = $"-i \"{videoPath}\" -vf \"drawtext=text='abc'\" -c:a copy \"{videoPath}\"";
 			ExecuteFFmpegCommand(overlayCommand);
 		}
 

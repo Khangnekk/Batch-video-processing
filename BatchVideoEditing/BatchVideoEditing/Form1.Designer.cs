@@ -47,32 +47,32 @@
 			// 
 			// btnProcess
 			// 
-			btnProcess.Location = new Point(27, 315);
+			btnProcess.Location = new Point(515, 315);
 			btnProcess.Name = "btnProcess";
 			btnProcess.Size = new Size(150, 31);
 			btnProcess.TabIndex = 5;
-			btnProcess.Text = "Process";
+			btnProcess.Text = "Chỉnh sửa ngay";
 			btnProcess.UseVisualStyleBackColor = true;
 			btnProcess.Click += btnProcess_Click;
 			// 
 			// btnGoToPath
 			// 
-			btnGoToPath.Location = new Point(27, 455);
+			btnGoToPath.Location = new Point(27, 483);
 			btnGoToPath.Name = "btnGoToPath";
 			btnGoToPath.Size = new Size(150, 32);
 			btnGoToPath.TabIndex = 7;
-			btnGoToPath.Text = "Go to Output Folder";
+			btnGoToPath.Text = "Xem kết quả";
 			btnGoToPath.UseVisualStyleBackColor = true;
 			btnGoToPath.Visible = false;
 			btnGoToPath.Click += btnGoToPath_Click;
 			// 
 			// btnClearAll
 			// 
-			btnClearAll.Location = new Point(227, 315);
+			btnClearAll.Location = new Point(27, 315);
 			btnClearAll.Name = "btnClearAll";
 			btnClearAll.Size = new Size(150, 31);
 			btnClearAll.TabIndex = 9;
-			btnClearAll.Text = "Clear All";
+			btnClearAll.Text = "Xóa tất cả";
 			btnClearAll.UseVisualStyleBackColor = true;
 			btnClearAll.Click += btnClearAll_Click;
 			// 
@@ -82,7 +82,7 @@
 			lstVideos.ItemHeight = 20;
 			lstVideos.Location = new Point(27, 115);
 			lstVideos.Name = "lstVideos";
-			lstVideos.Size = new Size(350, 184);
+			lstVideos.Size = new Size(638, 184);
 			lstVideos.TabIndex = 3;
 			// 
 			// progressBar
@@ -97,7 +97,7 @@
 			lblProgress.AutoSize = true;
 			lblProgress.Location = new Point(27, 405);
 			lblProgress.Name = "lblProgress";
-			lblProgress.Size = new Size(92, 20);
+			lblProgress.Size = new Size(129, 20);
 			lblProgress.TabIndex = 1;
 			lblProgress.Text = "Total Progress: 0%";
 			// 
@@ -106,7 +106,7 @@
 			label1.AutoSize = true;
 			label1.Font = new Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point);
 			label1.ForeColor = SystemColors.ActiveCaptionText;
-			label1.Location = new Point(251, 9);
+			label1.Location = new Point(351, 9);
 			label1.Name = "label1";
 			label1.Size = new Size(607, 46);
 			label1.TabIndex = 0;
@@ -115,16 +115,17 @@
 			// flowLayoutPanelProgress
 			// 
 			flowLayoutPanelProgress.AutoScroll = true;
-			flowLayoutPanelProgress.Location = new Point(502, 115);
+			flowLayoutPanelProgress.BackColor = SystemColors.ButtonHighlight;
+			flowLayoutPanelProgress.Location = new Point(703, 115);
 			flowLayoutPanelProgress.Name = "flowLayoutPanelProgress";
-			flowLayoutPanelProgress.Size = new Size(300, 400);
+			flowLayoutPanelProgress.Size = new Size(586, 523);
 			flowLayoutPanelProgress.TabIndex = 8;
 			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(1062, 673);
+			ClientSize = new Size(1331, 673);
 			Controls.Add(label1);
 			Controls.Add(lblProgress);
 			Controls.Add(progressBar);
